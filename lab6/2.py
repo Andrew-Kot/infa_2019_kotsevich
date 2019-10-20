@@ -44,7 +44,7 @@ def updateScene():               #обновление картинки
     root.after(updateTime, updateScene)
 
 score = 0
-def click(event):
+def click(event):                #подсчёт очков
     global score
     for b in balls:
         if (event.x - b.x) ** 2 + (event.y - b.y) ** 2 <= b.r ** 2:
