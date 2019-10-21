@@ -7,7 +7,6 @@ root.geometry('800x600')
 
 updateTime = 30
 balls = []
-polygons = []
 
 l = Label(bg='black', fg='white', width=20)
 canv = Canvas(root, bg='white')
@@ -18,8 +17,8 @@ colors = ['red', 'orange', 'yellow', 'green', 'blue']
 
 class ball:                  #класс мячиков
     def __init__(self):
-        self.x = rnd(0, 800)      #рандомная координата x
-        self.y = rnd(0, 600)      #рандомная координата y
+        self.x = rnd(65, 735)      #рандомная координата x
+        self.y = rnd(65, 535)      #рандомная координата y
         self.vx = rnd(-15, 15)    #рандомная скорость vx
         self.vy = rnd(-15, 15)    #рандомная скорость vy
         self.r = rnd(0, 50)       #рандомный радиус r
@@ -56,7 +55,7 @@ def click(event):                #подсчёт очков
 for i in range(17):
     balls.append(ball())
 
-root.after(updateTime, updateScene())
+root.after(updateTime, updateScene)
 canv.bind("<Button-1>", click)
 l.pack()
 mainloop()
