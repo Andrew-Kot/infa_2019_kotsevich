@@ -1,4 +1,4 @@
-om random import randrange as rnd, choice
+from random import randrange as rnd, choice
 from tkinter import *
 import time
 
