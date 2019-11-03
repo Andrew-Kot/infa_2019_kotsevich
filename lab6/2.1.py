@@ -61,7 +61,7 @@ def create():
     for i in range(5):
         balls.append(ball())
     root.after(10000, delete)
-    root.after(1000, create)
+    root.after(10000, create)
 
 create()
 root.after(updateTime, updateScene)
