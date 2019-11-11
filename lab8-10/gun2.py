@@ -3,19 +3,16 @@ import tkinter as tk
 import math
 import time
 
-# print (dir(math))
-
 root = tk.Tk()
 fr = tk.Frame(root)
 root.geometry('800x600')
 canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
-g=2 #ускорение свободного падения
+g = 2 #ускорение свободного падения
 class ball():
 	def __init__(self, x=40, y=450):
 		""" Конструктор класса ball
-
 		Args:
 		x - начальное положение мяча по горизонтали
 		y - начальное положение мяча по вертикали
@@ -46,26 +43,24 @@ class ball():
 
 	def move(self):
 		"""Переместить мяч по прошествии единицы времени.
-
 		Метод описывает перемещение мяча за один кадр перерисовки. То есть, обновляет значения
 		self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
 		и стен по краям окна (размер окна 800х600).
 		"""
-		# FIXME
+		if (self.x + self.r > 800 and self.vx > 0) or (self.x - self.r < 0 and self.vx < 0):  # отскок мяча
+			self.vx = -self.vx
+		if (self.y + self.r > 550 and self.vy < 0) or (self.y - self.r < 0 and self.vy > 0):
+			self.vy = -self.vy
 		self.vy = self.vy - 2  # гравитация
 		self.x += self.vx
 		self.y += -self.vy
 		self.vx -= self.vx / 100  # вязкое трение
 		self.vy -= self.vy / 100
-		if self.x+self.r > 800 or self.x-self.r < 0:  # отскок мишени
-			self.vx = -self.vx
-		if self.y-self.r < 0 or self.y+self.r > 550:
-			self.vy = -self.vy
+
 
 
 	def hittest(self, obj):
 		"""Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
-
 		Args:
 			obj: Обьект, с которым проверяется столкновение.
 		Returns:
@@ -84,14 +79,13 @@ class gun():
 		self.f2_power = 10
 		self.f2_on = 0
 		self.an = 1
-		self.id = canv.create_line(20, 450, 50, 420, width=7)  # FIXME: don't know how to set it...
+		self.id = canv.create_line(20, 450, 50, 420, width=7)
 
 	def fire2_start(self, event):
 		self.f2_on = 1
 
 	def fire2_end(self, event):
 		"""Выстрел мячом.
-
 		Происходит при отпускании кнопки мыши.
 		Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
 		"""
@@ -132,9 +126,8 @@ class target():
 	def __init__(self):
 		self.points = 0
 		self.live = 1
-		# FIXME: don't work!!! How to call this functions when object is created?
 		self.id = canv.create_oval(0, 0, 0, 0)
-		self.id_points = canv.create_text(30, 30, text=self.points, font='28')
+		#self.id_points = canv.create_text(30, 30, text=self.points, font='28')
 		self.new_target()
 
 	def new_target(self):
@@ -149,8 +142,8 @@ class target():
 	def hit(self, points=1):
 		"""Попадание шарика в цель."""
 		canv.coords(self.id, -10, -10, -10, -10)
-		self.points += 1
-		canv.itemconfig(self.id_points, text=self.points)
+		#self.points += 1
+		#canv.itemconfig(self.id_points, text=self.points)
 
 
 t1 = target()
@@ -178,24 +171,26 @@ def new_game(event=''):
 		for b in list(balls):
 			b.move()
 			# удаление мячиков с маленькими скоростями и с координатами, превышающими размер стола
-			if (abs(b.vy) < g and b.y+b.r > 550) or b.y+b.r > 570:
+			if abs(b.vy) < g and b.y+b.r > 550:
 				balls.remove(b)
 				del(b)
 				continue
 			b.set_coords()
-			if (b.hittest(t1) and t1.live) or (b.hittest(t2) and t2.live):
+			if b.hittest(t1) and t1.live:
 				t1.live = 0
-				t2.live = 0
 				t1.hit()
+			if b.hittest(t2) and t2.live:
+				t2.live = 0
 				t2.hit()
+			if t1.live == 0 and t2.live == 0:
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
 				if bullet == 1:
-					canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрел')
+					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрел')
 				if bullet >= 2 and bullet <= 4:
-					canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрела')
-				if bullet >= 5 and str(bullet):
-					canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрелов')
+					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрела')
+				if bullet >= 5:
+					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрелов')
 		canv.update()
 		time.sleep(0.03)
 		g1.targetting()
