@@ -9,7 +9,10 @@ root.geometry('800x600')
 canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
-g = 2 #ускорение свободного падения
+g = 2  # ускорение свободного падения
+point = 1 # количество очков, прибавляемых за каждую уничтоженную цель
+t = 0.03  # время между перерисовкой кадров
+
 class ball():
 	def __init__(self, x=40, y=450):
 		""" Конструктор класса ball
@@ -121,13 +124,13 @@ class gun():
 		else:
 			canv.itemconfig(self.id, fill='black')
 
+points = 0 #количество очков
 
 class target():
 	def __init__(self):
 		self.points = 0
 		self.live = 1
 		self.id = canv.create_oval(0, 0, 0, 0)
-		#self.id_points = canv.create_text(30, 30, text=self.points, font='28')
 		self.new_target()
 
 	def new_target(self):
@@ -139,12 +142,11 @@ class target():
 		canv.coords(self.id, x - r, y - r, x + r, y + r)
 		canv.itemconfig(self.id, fill=color)
 
-	def hit(self, points=1):
+	def hit(self):
 		"""Попадание шарика в цель."""
+		global points
 		canv.coords(self.id, -10, -10, -10, -10)
-		#self.points += 1
-		#canv.itemconfig(self.id_points, text=self.points)
-
+		points += point #прибавление очков за уничтоженную цель
 
 t1 = target()
 t2 = target()
@@ -152,10 +154,10 @@ screen1 = canv.create_text(400, 300, text='', font='28')
 g1 = gun()
 bullet = 0
 balls = []
-
-
+# Вывод очков на экран
+canv.points = canv.create_text(100, 30, text='Количество очков: ' + str(points), font='28')
 def new_game(event=''):
-	global gun, t1, t2, screen1, balls, bullet
+	global t1, t2, screen1, balls, bullet
 	t1.new_target()
 	t2.new_target()
 	bullet = 0
@@ -164,13 +166,12 @@ def new_game(event=''):
 	canv.bind('<ButtonRelease-1>', g1.fire2_end)
 	canv.bind('<Motion>', g1.targetting)
 
-	z = 0.03
 	t1.live = 1
 	t2.live = 1
 	while (t1.live or t2.live) or balls:
 		for b in list(balls):
 			b.move()
-			# удаление мячиков с маленькими скоростями и с координатами, превышающими размер стола
+			# удаление мячиков с маленькими скоростями
 			if abs(b.vy) < g and b.y+b.r > 550:
 				balls.remove(b)
 				del(b)
@@ -179,9 +180,11 @@ def new_game(event=''):
 			if b.hittest(t1) and t1.live:
 				t1.live = 0
 				t1.hit()
+				canv.itemconfig(canv.points, text='Количество очков: ' + str(points))
 			if b.hittest(t2) and t2.live:
 				t2.live = 0
 				t2.hit()
+				canv.itemconfig(canv.points, text='Количество очков: ' + str(points))
 			if t1.live == 0 and t2.live == 0:
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
@@ -192,11 +195,11 @@ def new_game(event=''):
 				if bullet >= 5:
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрелов')
 		canv.update()
-		time.sleep(0.03)
+		time.sleep(t)
 		g1.targetting()
 		g1.power_up()
 	canv.itemconfig(screen1, text='')
-	canv.delete(gun)
+	canv.delete(g1)
 	root.after(750, new_game)
 
 new_game()
