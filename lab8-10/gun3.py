@@ -10,7 +10,10 @@ root.geometry('800x600')
 canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
-g = 2   #ускорение свободного падения
+g = 2  # ускорение свободного падения
+point = 1 # количество очков, прибавляемых за каждую уничтоженную цель
+t = 0.03  # время между перерисовкой кадров
+
 class ball():
 	def __init__(self, x=40, y=450):
 		""" Конструктор класса ball
@@ -52,7 +55,7 @@ class ball():
 			self.vx = -self.vx
 		if (self.y + self.r > 550 and self.vy < 0) or (self.y - self.r < 0 and self.vy > 0):
 			self.vy = -self.vy
-		self.vy = self.vy - 2  # гравитация
+		self.vy = self.vy - g  # гравитация
 		self.x += self.vx
 		self.y += -self.vy
 		self.vx -= self.vx / 100  # вязкое трение
@@ -120,7 +123,7 @@ class gun():
 		else:
 			canv.itemconfig(self.id, fill='black')
 
-
+points = 0 #количество очков
 class target():
 	def __init__(self):
 		self.points = 0
@@ -139,9 +142,11 @@ class target():
 		self.ux = rnd(-20,0)
 		self.uy = rnd(-20,0)
 
-	def hit(self, points=1):
+	def hit(self):
 		"""Попадание шарика в цель."""
+		global points
 		canv.coords(self.id, -10, -10, -10, -10)
+		points += point #прибавление очков за уничтоженную цель
 
 
 	def move(self):
@@ -162,15 +167,14 @@ class target():
 			self.y + self.r
 		)
 
-
-
 screen1 = canv.create_text(400, 300, text='', font='28')
 g1 = gun()
 bullet = 0
 balls = []
-
+# Вывод очков на экран
+canv.points = canv.create_text(100, 30, text='Количество очков: ' + str(points), font='28')
 def new_game(event=''):
-	global gun, t1, t2, screen1, balls, bullet, points
+	global t1, t2, screen1, balls, bullet, points
 	t1 = target()
 	t2 = target()
 	bullet = 0
@@ -179,7 +183,6 @@ def new_game(event=''):
 	canv.bind('<ButtonRelease-1>', g1.fire2_end)
 	canv.bind('<Motion>', g1.targetting)
 
-	z = 0.03
 	t1.live = 1
 	t2.live = 1
 	while (t1.live or t2.live) or balls:
@@ -199,10 +202,12 @@ def new_game(event=''):
 				t1.live = 0
 				t1.hit()
 				canv.delete(t1.id)
+				canv.itemconfig(canv.points, text='Количество очков: ' + str(points))
 			if b.hittest(t2) and t2.live:
 				t2.live = 0
 				t2.hit()
 				canv.delete(t2.id)
+				canv.itemconfig(canv.points, text='Количество очков: ' + str(points))
 			if t1.live == 0 and t2.live == 0:
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
@@ -210,14 +215,14 @@ def new_game(event=''):
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрел')
 				if bullet >= 2 and bullet <= 4:
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрела')
-				if bullet >= 5 and str(bullet):
+				if bullet >= 5:
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрелов')
 		canv.update()
-		time.sleep(0.03)
+		time.sleep(t)
 		g1.targetting()
 		g1.power_up()
 	canv.itemconfig(screen1, text='')
-	canv.delete(gun)
+	canv.delete(g1)
 	root.after(750, new_game)
 
 new_game()
