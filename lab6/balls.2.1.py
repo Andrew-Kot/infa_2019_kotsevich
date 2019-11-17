@@ -1,6 +1,5 @@
 from random import randrange as rnd, choice
 from tkinter import *
-import time
 
 root = Tk()
 root.geometry('800x600')
@@ -48,8 +47,11 @@ def click(event):                #подсчёт очков
     for b in balls:
         if (event.x - b.x) ** 2 + (event.y - b.y) ** 2 <= b.r ** 2:
             score += 10
-        print(score)
-        l['text']=score
+    l['text']=score
+
+def create():
+    for i in range(5):
+        balls.append(ball())
 
 def delete():
     global balls
@@ -57,13 +59,12 @@ def delete():
     balls=[]
 
 #Создание, удаление и пересоздание шариков, количество можно изменять
-def create():
-    for i in range(5):
-        balls.append(ball())
-    root.after(10000, delete)
-    root.after(10000, create)
+def rerun():
+    delete()
+    create()
+    root.after(10000, rerun)
 
-create()
+rerun()
 root.after(updateTime, updateScene)
 canv.bind("<Button-1>", click)
 l.pack()
