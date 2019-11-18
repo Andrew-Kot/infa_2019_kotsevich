@@ -48,17 +48,19 @@ def click(event):                #подсчёт очков
         if (event.x - b.x) ** 2 + (event.y - b.y) ** 2 <= b.r ** 2:
             score += 10
     l['text']=score
-
+    
+#Создание шариков, количество можно изменять
 def create():
     for i in range(5):
         balls.append(ball())
-
+        
+#Удаление всех шариков
 def delete():
     global balls
     canv.delete(ALL)
     balls=[]
 
-#Создание, удаление и пересоздание шариков, количество можно изменять
+#Пересоздание шариков
 def rerun():
     delete()
     create()
