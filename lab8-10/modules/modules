@@ -112,6 +112,12 @@ class gun():
 		else:
 			canv.itemconfig(self.id, fill='black')
 
+	#функция, отвечающая за возвращение пушки в первоначальное положение после победы
+	def return_gun(self):
+		self.f2_power = 0
+		canv.itemconfig(self.id, fill='black')
+		self.f2_on = 0
+
 points = 0 #количество очков
 class target(ball): #наследование атрибутов класса ball
 
