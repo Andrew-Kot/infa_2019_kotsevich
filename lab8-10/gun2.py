@@ -69,7 +69,6 @@ class ball():
 		Returns:
 			Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
 		"""
-		# FIXME
 		if ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 < (self.r + obj.r) ** 2):
 			return True
 
@@ -123,6 +122,12 @@ class gun():
 			canv.itemconfig(self.id, fill='orange')
 		else:
 			canv.itemconfig(self.id, fill='black')
+
+	#функция, отвечающая за возвращение пушки в первоначальное положение после победы
+	def return_gun(self):
+		self.f2_power = 0
+		canv.itemconfig(self.id, fill='black')
+		self.f2_on = 0
 
 points = 0 #количество очков
 
@@ -188,6 +193,8 @@ def new_game(event=''):
 			if t1.live == 0 and t2.live == 0:
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
+				# возвращение вида пушки к первоначальному после уничтожения целей
+				g1.return_gun()
 				if bullet == 1:
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(bullet) + ' выстрел')
 				if bullet >= 2 and bullet <= 4:
