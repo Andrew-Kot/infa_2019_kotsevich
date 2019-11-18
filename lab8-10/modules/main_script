@@ -16,7 +16,7 @@ g1 = mod.gun()
 # Вывод очков на экран
 canv.points = canv.create_text(100, 30, text='Количество очков: ' + str(mod.points), font='28')
 def new_game(event=''):
-	global t1, t2, screen1, balls, bullet
+	global t1, t2, g1, screen1, balls, bullet, f2_power
 	t1 = mod.target()
 	t2 = mod.target()
 	mod.bullet = 0
@@ -24,7 +24,6 @@ def new_game(event=''):
 	canv.bind('<Button-1>', g1.fire2_start)
 	canv.bind('<ButtonRelease-1>', g1.fire2_end)
 	canv.bind('<Motion>', g1.targetting)
-
 	t1.live = 1
 	t2.live = 1
 	while (t1.live or t2.live) or mod.balls:
@@ -53,6 +52,8 @@ def new_game(event=''):
 			if t1.live == 0 and t2.live == 0:
 				canv.bind('<Button-1>', '')
 				canv.bind('<ButtonRelease-1>', '')
+				# возвращение вида пушки к первоначальному после уничтожения целей
+				g1.return_gun()
 				if mod.bullet == 1:
 					canv.itemconfig(screen1, text='Вы уничтожили цели за ' + str(mod.bullet) + ' выстрел')
 				if mod.bullet >= 2 and mod.bullet <= 4:
